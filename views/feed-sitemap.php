@@ -72,12 +72,22 @@ endif;
 
 // custom sitemaps
 $custom_sitemaps = apply_filters( 'xmlsf_custom_sitemaps', get_option( 'xmlsf_custom_sitemaps', array() ) );
-if ( is_array( $custom_sitemaps ) ) :
-	foreach ( $custom_sitemaps as $url ) {
-		if ( empty( $url ) ) continue;
+if ( is_array($custom_sitemaps) ) :
+	foreach ( $custom_sitemaps as $custom_sitemap ) {
+		if (empty($custom_sitemap)) continue;
+
+		if ( ! is_array($custom_sitemap) ) {
+			$custom_sitemap = explode('|', rawurldecode( $custom_sitemap ));
+        }
+
+		$url = trim( $custom_sitemap[0] );
+		$lastmod = trim( isset( $custom_sitemap[1] ) ? $custom_sitemap[1] : '' );
 ?>
 	<sitemap>
-		<loc><?php echo esc_url( $url ); ?></loc>
+		<loc><?php echo esc_url($url); ?></loc>
+		<?php if ( $lastmod ) { ?>
+        	<lastmod><?php echo date( DATE_W3C, strtotime( $lastmod ) ); ?></lastmod>
+		<?php } ?>
 	</sitemap>
 <?php
 	}
